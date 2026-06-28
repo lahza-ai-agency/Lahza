@@ -6,6 +6,7 @@ import {
   createLead,
   updateLeadStatus,
   deleteLead,
+  convertLeadToClient,
   LEAD_STATUSES,
   type Lead,
   type LeadStatus,
@@ -76,6 +77,7 @@ import {
   Upload,
   CalendarClock,
   RefreshCw,
+  UserCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/crm")({
@@ -122,6 +124,17 @@ function CrmPage() {
       qc.invalidateQueries({ queryKey: ["leads"] });
       toast.success("Lead deleted");
     },
+  });
+
+  const convertMut = useMutation({
+    mutationFn: convertLeadToClient,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      qc.invalidateQueries({ queryKey: ["clients-directory"] });
+      qc.invalidateQueries({ queryKey: ["client-options"] });
+      toast.success("Lead converted to client — you can now create a project for them.");
+    },
+    onError: () => toast.error("Could not convert lead to client"),
   });
 
   const filtered = leads.filter((l) => {
@@ -288,15 +301,30 @@ function CrmPage() {
                 <div className="group space-y-1">
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-sm font-medium">{l.name}</span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteMut.mutate(l.id);
-                      }}
-                      className="opacity-0 transition-opacity group-hover:opacity-100"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      {l.status !== "WON" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            convertMut.mutate(l);
+                          }}
+                          disabled={convertMut.isPending}
+                          title="Convert to client"
+                          className="opacity-0 transition-opacity group-hover:opacity-100"
+                        >
+                          <UserCheck className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
+                        </button>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteMut.mutate(l.id);
+                        }}
+                        className="opacity-0 transition-opacity group-hover:opacity-100"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                      </button>
+                    </div>
                   </div>
                   {l.company && <p className="text-xs text-muted-foreground">{l.company}</p>}
                   <div className="flex items-center justify-between pt-1">

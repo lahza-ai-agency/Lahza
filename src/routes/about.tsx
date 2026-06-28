@@ -13,6 +13,8 @@ import {
   ShieldCheck,
   Facebook,
 } from "lucide-react";
+import founderMohamedImg from "@/assets/founder-mohamed.jpg";
+import founderGeorgeImg from "@/assets/founder-george.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -47,13 +49,15 @@ const reasons = [
 const founders = [
   {
     name: "Mohammed Ayman",
-    role: "Founder — Sales & Operations",
-    desc: "Leads sales and runs day-to-day agency operations.",
+    role: "Founder & CEO",
+    desc: "Leading business strategy, sales, operations, client partnerships, AI automation, software development, and technical architecture.",
+    image: founderMohamedImg,
   },
   {
     name: "George Adel",
     role: "Co-Founder — Technical Lead",
     desc: "Leads the technical side, building the automation systems we ship.",
+    image: founderGeorgeImg,
   },
 ];
 
@@ -172,9 +176,11 @@ function AboutPage() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="rounded-2xl border border-border bg-card p-8"
             >
-              <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/15 text-xl font-bold text-primary">
-                {f.name.split(" ").map((p) => p[0]).join("")}
-              </div>
+              <img
+                src={f.image}
+                alt={f.name}
+                className="h-14 w-14 rounded-full object-cover ring-2 ring-primary/20"
+              />
               <h3 className="mt-4 text-lg font-semibold">{f.name}</h3>
               <p className="text-sm text-primary">{f.role}</p>
               <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>

@@ -59,3 +59,36 @@ export async function deleteLead(id: string) {
   const { error } = await supabase.from("leads").delete().eq("id", id);
   if (error) throw error;
 }
+
+/**
+ * Staff: convert a won/qualified lead into a real client record.
+ * Creates a row in `clients` (so projects can be assigned to it via client_id,
+ * i.e. the project belongs to the client — not just a free-text company name),
+ * and marks the source lead as WON. Returns the new client id.
+ */
+export async function convertLeadToClient(lead: Lead): Promise<string> {
+  const noteLines = [
+    lead.email ? `Email: ${lead.email}` : null,
+    lead.notes ? lead.notes : null,
+    `Converted from lead "${lead.name}".`,
+  ].filter(Boolean) as string[];
+
+  const { data, error } = await supabase
+    .from("clients")
+    .insert({
+      company: lead.company || lead.name,
+      phone: lead.phone ?? null,
+      notes: noteLines.join("\n"),
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+
+  const { error: leadError } = await supabase
+    .from("leads")
+    .update({ status: "WON" })
+    .eq("id", lead.id);
+  if (leadError) throw leadError;
+
+  return data.id as string;
+}
