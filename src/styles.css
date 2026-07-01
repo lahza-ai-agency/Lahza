@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -40,61 +41,73 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --shadow-glow: 0 0 60px -12px rgb(199 240 45 / 0.35);
+  --shadow-glow: 0 0 80px -16px rgb(139 92 246 / 0.45);
+  --shadow-glass: 0 8px 32px -8px rgb(5 5 15 / 0.6), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+
+  --color-aurora-violet: var(--aurora-violet);
+  --color-aurora-blue: var(--aurora-blue);
+  --color-aurora-cyan: var(--aurora-cyan);
 }
 
-/* Dark-first SaaS theme — Lahza brand */
+/* Dark Luxury theme — Lahza brand (violet / blue / cyan aurora) */
 :root {
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  --background: oklch(0.13 0.02 280);     /* #0A0A12 near-black */
-  --foreground: oklch(0.97 0.01 110);
+  --background: oklch(0.09 0.018 290);     /* #060611 near-black violet */
+  --foreground: oklch(0.97 0.005 290);
 
-  --card: oklch(0.17 0.02 280);
-  --card-foreground: oklch(0.97 0.01 110);
-  --popover: oklch(0.17 0.02 280);
-  --popover-foreground: oklch(0.97 0.01 110);
+  --card: oklch(0.15 0.025 290);
+  --card-foreground: oklch(0.97 0.005 290);
+  --popover: oklch(0.14 0.025 290);
+  --popover-foreground: oklch(0.97 0.005 290);
 
-  --primary: oklch(0.9 0.21 122);         /* #C7F02D lime */
-  --primary-foreground: oklch(0.18 0.02 280);
+  --primary: oklch(0.64 0.23 296);         /* violet #8B5CF6 */
+  --primary-foreground: oklch(0.98 0.005 290);
 
-  --secondary: oklch(0.22 0.02 280);
-  --secondary-foreground: oklch(0.97 0.01 110);
+  --secondary: oklch(0.2 0.025 290);
+  --secondary-foreground: oklch(0.97 0.005 290);
 
-  --muted: oklch(0.22 0.02 280);
-  --muted-foreground: oklch(0.68 0.02 280);
+  --muted: oklch(0.19 0.022 290);
+  --muted-foreground: oklch(0.65 0.025 290);
 
-  --accent: oklch(0.26 0.03 280);
-  --accent-foreground: oklch(0.97 0.01 110);
+  --accent: oklch(0.68 0.15 220);          /* cyan-blue #38BDF8 */
+  --accent-foreground: oklch(0.1 0.02 290);
 
   --destructive: oklch(0.62 0.23 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.27 0.02 280);
-  --input: oklch(0.27 0.02 280);
-  --ring: oklch(0.9 0.21 122);
+  --border: oklch(0.27 0.03 290 / 0.6);
+  --input: oklch(0.27 0.03 290 / 0.6);
+  --ring: oklch(0.64 0.23 296);
 
-  --chart-1: oklch(0.9 0.21 122);
-  --chart-2: oklch(0.7 0.15 200);
-  --chart-3: oklch(0.75 0.18 60);
+  --chart-1: oklch(0.64 0.23 296);
+  --chart-2: oklch(0.6 0.19 258);
+  --chart-3: oklch(0.78 0.13 200);
   --chart-4: oklch(0.65 0.2 320);
-  --chart-5: oklch(0.6 0.18 25);
+  --chart-5: oklch(0.75 0.18 60);
 
-  --sidebar: oklch(0.15 0.02 280);
-  --sidebar-foreground: oklch(0.92 0.01 110);
-  --sidebar-primary: oklch(0.9 0.21 122);
-  --sidebar-primary-foreground: oklch(0.18 0.02 280);
-  --sidebar-accent: oklch(0.24 0.02 280);
-  --sidebar-accent-foreground: oklch(0.97 0.01 110);
-  --sidebar-border: oklch(0.24 0.02 280);
-  --sidebar-ring: oklch(0.9 0.21 122);
+  --sidebar: oklch(0.1 0.02 290);
+  --sidebar-foreground: oklch(0.92 0.005 290);
+  --sidebar-primary: oklch(0.64 0.23 296);
+  --sidebar-primary-foreground: oklch(0.98 0.005 290);
+  --sidebar-accent: oklch(0.2 0.025 290);
+  --sidebar-accent-foreground: oklch(0.97 0.005 290);
+  --sidebar-border: oklch(0.22 0.025 290);
+  --sidebar-ring: oklch(0.64 0.23 296);
+
+  /* Aurora gradient stops, exposed for utilities below */
+  --aurora-violet: oklch(0.64 0.23 296);
+  --aurora-blue: oklch(0.6 0.19 258);
+  --aurora-cyan: oklch(0.78 0.13 200);
 }
 
 @layer base {
@@ -110,7 +123,12 @@
 }
 
 @utility text-gradient {
-  background: linear-gradient(100deg, oklch(0.97 0.01 110), oklch(0.9 0.21 122));
+  background: linear-gradient(
+    100deg,
+    var(--aurora-violet),
+    var(--aurora-blue) 55%,
+    var(--aurora-cyan)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -121,6 +139,51 @@
     linear-gradient(to right, oklch(1 0 0 / 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, oklch(1 0 0 / 0.04) 1px, transparent 1px);
   background-size: 48px 48px;
+}
+
+/* ── Dark Luxury design system ─────────────────────────────────── */
+
+@utility bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+@utility bg-aurora-mesh {
+  background-image:
+    radial-gradient(at 15% 0%, oklch(0.64 0.23 296 / 0.35) 0, transparent 55%),
+    radial-gradient(at 85% 10%, oklch(0.6 0.19 258 / 0.3) 0, transparent 55%),
+    radial-gradient(at 50% 100%, oklch(0.78 0.13 200 / 0.25) 0, transparent 55%);
+}
+
+@utility glass-panel {
+  background-color: oklch(0.18 0.03 290 / 0.45);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid oklch(1 0 0 / 0.08);
+  box-shadow: var(--shadow-glass);
+}
+
+@utility glass-panel-strong {
+  background-color: oklch(0.16 0.03 290 / 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid oklch(1 0 0 / 0.1);
+  box-shadow: var(--shadow-glass);
+}
+
+@utility gradient-border {
+  position: relative;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(oklch(0.16 0.03 290 / 0.6), oklch(0.16 0.03 290 / 0.6)) padding-box,
+    linear-gradient(120deg, var(--aurora-violet), var(--aurora-blue), var(--aurora-cyan)) border-box;
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+}
+
+@utility font-mono-data {
+  font-family: var(--font-mono);
 }
 
 /* ── Premium dialog / command palette override ─────────────────── */

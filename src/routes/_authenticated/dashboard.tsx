@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
-import { fetchLeads } from "@/lib/crm";
+import { fetchContacts, PIPELINE_STATUSES } from "@/lib/crm";
 import { fetchProjects } from "@/lib/projects";
 import { fetchClientsDirectory } from "@/lib/clients";
 import { cn } from "@/lib/utils";
@@ -61,12 +61,15 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const STAGE_COLORS: Record<string, string> = {
-  NEW: "bg-muted text-muted-foreground",
-  CONTACTED: "bg-blue-500/15 text-blue-400",
-  QUALIFIED: "bg-yellow-500/15 text-yellow-400",
-  PROPOSAL: "bg-purple-500/15 text-purple-400",
+  LEAD: "bg-muted text-muted-foreground",
+  QUALIFIED: "bg-blue-500/15 text-blue-400",
+  PROPOSAL_SENT: "bg-yellow-500/15 text-yellow-400",
+  NEGOTIATION: "bg-purple-500/15 text-purple-400",
   WON: "bg-emerald-500/15 text-emerald-400",
+  ACTIVE_CLIENT: "bg-emerald-500/15 text-emerald-400",
+  INACTIVE_CLIENT: "bg-muted text-muted-foreground",
   LOST: "bg-destructive/15 text-destructive",
+  ARCHIVED: "bg-muted text-muted-foreground",
 };
 
 // Fake sparkline data for visual interest — replace with real time-series when available
@@ -99,21 +102,20 @@ function StatCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-5 transition-shadow hover:shadow-lg",
-        accent ? "border-primary/30 bg-primary/5" : "border-border bg-card",
+        "group relative flex flex-col gap-3 overflow-hidden rounded-2xl border p-5 backdrop-blur-xl transition-shadow hover:shadow-[var(--shadow-glow)]",
+        accent
+          ? "border-white/10 bg-gradient-to-br from-aurora-violet/15 via-card/60 to-aurora-cyan/10"
+          : "border-white/10 bg-card/50",
       )}
     >
-      {/* Subtle background glow on accent card */}
-      {accent && (
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-      )}
-
       <div className="flex items-start justify-between">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
         <span
           className={cn(
             "grid h-9 w-9 place-items-center rounded-xl",
-            accent ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground",
+            accent
+              ? "bg-gradient-to-br from-aurora-violet/30 to-aurora-cyan/20 text-aurora-cyan"
+              : "bg-white/5 text-muted-foreground",
           )}
         >
           <Icon className="h-4 w-4" />
@@ -121,7 +123,7 @@ function StatCard({
       </div>
 
       <div>
-        <p className="text-3xl font-bold tracking-tight">{value}</p>
+        <p className="font-display text-3xl font-semibold tracking-tight">{value}</p>
         {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
       </div>
 
@@ -144,16 +146,22 @@ function StatCard({
       )}
 
       {/* Micro sparkline */}
-      <div className="pointer-events-none absolute bottom-0 end-0 h-12 w-24 opacity-20">
+      <div className="pointer-events-none absolute bottom-0 end-0 h-12 w-24 opacity-40">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={sparklineData}>
+            <defs>
+              <linearGradient id={`spark-${accent ? "a" : "b"}`} x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="var(--aurora-violet)" />
+                <stop offset="100%" stopColor="var(--aurora-cyan)" />
+              </linearGradient>
+            </defs>
             <Area
               type="monotone"
               dataKey="v"
-              stroke={accent ? "#C7F02D" : "#888"}
+              stroke={`url(#spark-${accent ? "a" : "b"})`}
               strokeWidth={1.5}
-              fill={accent ? "#C7F02D" : "#888"}
-              fillOpacity={0.3}
+              fill={`url(#spark-${accent ? "a" : "b"})`}
+              fillOpacity={0.25}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -175,7 +183,7 @@ function SectionHeader({
       {action && (
         <Link
           to={action.to}
-          className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
+          className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-aurora-cyan"
         >
           {action.label} <ArrowRight className="h-3 w-3" />
         </Link>
@@ -192,29 +200,36 @@ function DashboardPage() {
     if (!loading && isClient && !isStaff) navigate({ to: "/portal", replace: true });
   }, [loading, isClient, isStaff, navigate]);
 
-  const leadsQ = useQuery({ queryKey: ["leads"], queryFn: fetchLeads });
+  const contactsQ = useQuery({ queryKey: ["contacts"], queryFn: fetchContacts });
   const projectsQ = useQuery({ queryKey: ["projects"], queryFn: fetchProjects });
   const clientsQ = useQuery({
     queryKey: ["clients-directory-lite"],
     queryFn: fetchClientsDirectory,
   });
 
-  const leads = leadsQ.data ?? [];
+  const contacts = contactsQ.data ?? [];
   const projects = projectsQ.data ?? [];
   const clients = clientsQ.data ?? [];
 
-  const openLeads = leads.filter((l) => !["WON", "LOST"].includes(l.status));
+  // "Leads" here means contacts still early in the pipeline (not yet won/lost/client).
+  const leads = contacts.filter((c) => PIPELINE_STATUSES.includes(c.status));
+  const openLeads = leads.filter((c) => !["WON", "LOST"].includes(c.status));
   const pipelineValue = leads
-    .filter((l) => l.status !== "LOST")
-    .reduce((sum, l) => sum + Number(l.value || 0), 0);
+    .filter((c) => c.status !== "LOST")
+    .reduce((sum, c) => sum + Number(c.value || 0), 0);
 
   const recentLeads = leads.slice(0, 5);
   const recentProjects = projects.slice(0, 4);
 
-  const leadsByStage = ["NEW", "CONTACTED", "QUALIFIED", "PROPOSAL", "WON", "LOST"].map((s) => ({
-    stage: s.charAt(0) + s.slice(1).toLowerCase(),
-    count: leads.filter((l) => l.status === s).length,
-  }));
+  const leadsByStage = ["LEAD", "QUALIFIED", "PROPOSAL_SENT", "NEGOTIATION", "WON", "LOST"].map(
+    (s) => ({
+      stage: s
+        .split("_")
+        .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
+        .join(" "),
+      count: leads.filter((c) => c.status === s).length,
+    }),
+  );
 
   const projectsByStatus = ["PLANNING", "IN_PROGRESS", "TESTING", "DELIVERED", "COMPLETED"]
     .map((s) => ({
@@ -226,7 +241,7 @@ function DashboardPage() {
   // Real week-over-week counts, used for trend chips instead of placeholder text.
   const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const newLeadsThisWeek = leads.filter(
-    (l) => new Date(l.created_at).getTime() >= oneWeekAgo,
+    (c) => new Date(c.created_at).getTime() >= oneWeekAgo,
   ).length;
   const newProjectsThisWeek = projects.filter(
     (p) => new Date(p.created_at).getTime() >= oneWeekAgo,
@@ -235,8 +250,8 @@ function DashboardPage() {
     (c) => new Date(c.created_at).getTime() >= oneWeekAgo,
   ).length;
 
-  const closedLeads = leads.filter((l) => l.status === "WON" || l.status === "LOST");
-  const wonLeads = leads.filter((l) => l.status === "WON");
+  const closedLeads = leads.filter((c) => c.status === "WON" || c.status === "LOST");
+  const wonLeads = leads.filter((c) => c.status === "WON");
   const conversionRate = closedLeads.length > 0 ? (wonLeads.length / closedLeads.length) * 100 : 0;
 
   // Client growth: count of clients by signup month, last 6 months.
@@ -258,14 +273,14 @@ function DashboardPage() {
     return { month: label, clients: count };
   });
 
-  const isLoadingAny = leadsQ.isLoading || projectsQ.isLoading || clientsQ.isLoading;
+  const isLoadingAny = contactsQ.isLoading || projectsQ.isLoading || clientsQ.isLoading;
 
   return (
     <div className="space-y-8">
       {/* Page header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Good morning</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">Good morning</h1>
           <p className="text-sm text-muted-foreground">
             Here's what's happening across your agency today.
           </p>
@@ -337,7 +352,7 @@ function DashboardPage() {
       </div>
 
       {/* Client growth */}
-      <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
         <SectionHeader title="Client growth" action={{ label: "View CRM", to: "/crm" }} />
         <div className="mt-4">
           <ResponsiveContainer width="100%" height={180}>
@@ -383,7 +398,7 @@ function DashboardPage() {
 
       {/* Charts row */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
           <SectionHeader title="Leads by stage" action={{ label: "View CRM", to: "/crm" }} />
           <div className="mt-4">
             <ResponsiveContainer width="100%" height={220}>
@@ -416,7 +431,7 @@ function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
           <SectionHeader
             title="Projects by status"
             action={{ label: "View projects", to: "/projects" }}
@@ -484,12 +499,12 @@ function DashboardPage() {
       {/* Recent leads + recent projects */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Recent leads */}
-        <div className="rounded-2xl border border-border bg-card">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
           <div className="border-b border-border px-5 py-4">
             <SectionHeader title="Recent leads" action={{ label: "All leads", to: "/crm" }} />
           </div>
           <div className="divide-y divide-border">
-            {leadsQ.isLoading ? (
+            {contactsQ.isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3 px-5 py-3">
                   <div className="h-8 w-8 animate-pulse rounded-full bg-secondary" />
@@ -511,10 +526,12 @@ function DashboardPage() {
                   className="flex items-center gap-3 px-5 py-3 hover:bg-accent/30 transition-colors"
                 >
                   <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary/10 text-primary text-xs font-bold">
-                    {lead.name.slice(0, 2).toUpperCase()}
+                    {(lead.name ?? lead.company ?? "?").slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{lead.name}</p>
+                    <p className="truncate text-sm font-medium">
+                      {lead.name ?? lead.company ?? "Unnamed"}
+                    </p>
                     <p className="truncate text-xs text-muted-foreground">
                       {lead.company ?? lead.email ?? "—"}
                     </p>
@@ -534,7 +551,7 @@ function DashboardPage() {
         </div>
 
         {/* Recent projects */}
-        <div className="rounded-2xl border border-border bg-card">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
           <div className="border-b border-border px-5 py-4">
             <SectionHeader
               title="Recent projects"

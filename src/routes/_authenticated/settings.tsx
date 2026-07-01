@@ -79,11 +79,11 @@ function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground">Manage your profile and preferences.</p>
       </div>
 
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-6">
         <div className="mb-4 flex items-center gap-2">
           <User className="h-4 w-4 text-primary" />
           <h2 className="font-semibold">Profile</h2>
@@ -122,7 +122,7 @@ function SettingsPage() {
         </form>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-6">
+      <section className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-6">
         <div className="mb-4 flex items-center gap-2">
           <KeyRound className="h-4 w-4 text-primary" />
           <h2 className="font-semibold">Change Password</h2>

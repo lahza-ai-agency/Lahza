@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Project } from "@/lib/projects";
+import type { ContactStatus, LeadSource } from "@/lib/crm";
 
 export type BillingCycle = "MONTHLY" | "QUARTERLY" | "YEARLY" | "ONE_TIME";
 
@@ -12,6 +13,9 @@ export interface ClientDirectoryEntry {
   notes: string | null;
   name: string | null;
   email: string | null;
+  status: ContactStatus;
+  source: LeadSource;
+  value: number;
   created_at: string;
   project_count: number;
   subscription_plan: string | null;
@@ -23,10 +27,15 @@ export interface ClientDetail extends ClientDirectoryEntry {
   projects: Project[];
 }
 
+/** Staff: contacts who've reached client status (Won, Active, Inactive) —
+ * the "Clients" tab. Earlier-stage contacts live on the Pipeline tab. */
+const CLIENT_STAGE_STATUSES: ContactStatus[] = ["WON", "ACTIVE_CLIENT", "INACTIVE_CLIENT"];
+
 export async function fetchClientsDirectory(): Promise<ClientDirectoryEntry[]> {
   const { data: clients, error } = await supabase
     .from("clients")
     .select("*")
+    .in("status", CLIENT_STAGE_STATUSES)
     .order("created_at", { ascending: false });
   if (error) throw error;
   const list = clients ?? [];
@@ -60,8 +69,11 @@ export async function fetchClientsDirectory(): Promise<ClientDirectoryEntry[]> {
       phone: c.phone,
       website: c.website,
       notes: c.notes,
-      name: profile?.name ?? null,
-      email: profile?.email ?? null,
+      name: profile?.name ?? c.name ?? null,
+      email: profile?.email ?? c.email ?? null,
+      status: c.status as ContactStatus,
+      source: c.source as LeadSource,
+      value: Number(c.value ?? 0),
       created_at: c.created_at,
       project_count: countMap.get(c.id) ?? 0,
       subscription_plan: c.subscription_plan,
@@ -149,6 +161,7 @@ export async function createClient(input: ClientInput) {
       phone: input.phone || null,
       website: input.website || null,
       notes: input.notes || null,
+      status: "ACTIVE_CLIENT",
     })
     .select("id")
     .single();
@@ -198,8 +211,11 @@ export async function fetchClientDetail(clientId: string): Promise<ClientDetail 
     phone: client.phone,
     website: client.website,
     notes: client.notes,
-    name: profile?.name ?? null,
-    email: profile?.email ?? null,
+    name: profile?.name ?? client.name ?? null,
+    email: profile?.email ?? client.email ?? null,
+    status: client.status as ContactStatus,
+    source: client.source as LeadSource,
+    value: Number(client.value ?? 0),
     created_at: client.created_at,
     project_count: (projects ?? []).length,
     subscription_plan: client.subscription_plan,

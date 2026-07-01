@@ -33,7 +33,7 @@ function DraggableCard({ id, children }: { id: string; children: ReactNode }) {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`cursor-grab touch-none rounded-lg border border-border bg-background p-3 active:cursor-grabbing ${
+      className={`cursor-grab touch-none rounded-lg border border-white/10 bg-card/60 backdrop-blur-xl p-3 transition-shadow active:cursor-grabbing hover:shadow-[var(--shadow-glow)] ${
         isDragging ? "opacity-40" : ""
       }`}
     >
@@ -55,20 +55,22 @@ function DroppableColumn({
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.key });
   return (
-    <div className="flex w-72 shrink-0 flex-col rounded-xl border border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border px-3 py-2.5">
+    <div className="flex w-72 shrink-0 flex-col rounded-xl border border-white/10 bg-card/40 backdrop-blur-xl">
+      <div className="flex items-center justify-between border-b border-white/10 px-3 py-2.5">
         <span className="text-sm font-semibold">{column.label}</span>
-        <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{count}</span>
+        <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-muted-foreground">
+          {count}
+        </span>
       </div>
       <div
         ref={setNodeRef}
         className={`flex min-h-[120px] flex-1 flex-col gap-2 p-3 transition-colors ${
-          isOver ? "bg-primary/5" : ""
+          isOver ? "bg-aurora-violet/10" : ""
         }`}
       >
         {children}
       </div>
-      {footer && <div className="border-t border-border px-3 py-2">{footer}</div>}
+      {footer && <div className="border-t border-white/10 px-3 py-2">{footer}</div>}
     </div>
   );
 }
@@ -123,7 +125,7 @@ export function KanbanBoard<T>({
       </div>
       <DragOverlay>
         {activeItem ? (
-          <div className="w-64 rotate-2 rounded-lg border border-primary bg-background p-3 shadow-xl">
+          <div className="w-64 rotate-2 rounded-lg border border-aurora-violet/50 bg-card p-3 shadow-[var(--shadow-glow)]">
             {renderCard(activeItem)}
           </div>
         ) : null}

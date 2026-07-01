@@ -170,7 +170,7 @@ function ProjectDetailPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{project?.name ?? "Project"}</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">{project?.name ?? "Project"}</h1>
           {project?.description && (
             <p className="text-sm text-muted-foreground">{project.description}</p>
           )}
@@ -429,7 +429,7 @@ function TaskTimeline({ tasks, project }: { tasks: Task[]; project: Project | nu
   const span = Math.max(max - min, 1);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
       <div className="space-y-4">
         {dated.map((t) => {
           const pct = ((new Date(t.due_date!).getTime() - min) / span) * 100;
@@ -489,7 +489,7 @@ function TaskCalendar({ tasks }: { tasks: Task[] }) {
   const todayKey = new Date().toISOString().slice(0, 10);
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
       <div className="flex items-center justify-between pb-4">
         <h3 className="text-sm font-semibold">
           {cursor.toLocaleDateString(undefined, { month: "long", year: "numeric" })}

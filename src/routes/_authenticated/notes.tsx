@@ -72,7 +72,7 @@ function NotesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Notes & Tasks</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight">Notes & Tasks</h1>
         <p className="text-sm text-muted-foreground">
           Your personal space — only you can see this.
         </p>
@@ -92,7 +92,7 @@ function NotesPage() {
         <TabsContent value="todo" className="space-y-4">
           <form
             onSubmit={handleAddTodo}
-            className="flex flex-wrap items-end gap-2 rounded-2xl border border-border bg-card p-4"
+            className="flex flex-wrap items-end gap-2 rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-4"
           >
             <div className="min-w-[200px] flex-1 space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">New task</label>
@@ -160,7 +160,7 @@ function NotesPage() {
         <TabsContent value="notes" className="space-y-4">
           <form
             onSubmit={handleAddNote}
-            className="space-y-3 rounded-2xl border border-border bg-card p-4"
+            className="space-y-3 rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-4"
           >
             <Input
               value={noteTitle}
@@ -191,7 +191,7 @@ function NotesPage() {
               {notes.map((n) => (
                 <div
                   key={n.id}
-                  className="group relative rounded-2xl border border-border bg-card p-4"
+                  className="group relative rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-4"
                 >
                   <p className="font-medium">{n.title}</p>
                   {n.content && (

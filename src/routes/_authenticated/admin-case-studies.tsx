@@ -245,7 +245,7 @@ function AdminCaseStudiesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Case Studies</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">Case Studies</h1>
           <p className="text-sm text-muted-foreground">
             Manage the client case studies shown on the public website.
           </p>
@@ -258,7 +258,7 @@ function AdminCaseStudiesPage() {
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-48 animate-pulse rounded-2xl border border-border bg-card" />
+            <div key={i} className="h-48 animate-pulse rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl" />
           ))}
         </div>
       ) : caseStudies.length === 0 ? (
@@ -275,7 +275,7 @@ function AdminCaseStudiesPage() {
             <div
               key={cs.id}
               onClick={() => openEdit(cs)}
-              className="flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
+              className="flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl transition-colors hover:border-primary/40"
             >
               <div className="flex h-32 items-center justify-center overflow-hidden bg-secondary/40">
                 {cs.logo_url ? (

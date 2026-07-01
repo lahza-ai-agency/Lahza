@@ -51,7 +51,7 @@ function InboxPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+        <h1 className="flex items-center gap-2 text-2xl font-display font-semibold tracking-tight">
           <Inbox className="h-6 w-6 text-primary" /> Client Inbox
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -60,7 +60,7 @@ function InboxPage() {
       </div>
 
       <div className="grid h-[calc(100vh-12rem)] gap-4 md:grid-cols-[320px_1fr]">
-        <div className="overflow-y-auto rounded-2xl border border-border bg-card">
+        <div className="overflow-y-auto rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
           {isLoading ? (
             <div className="p-6 text-center text-sm text-muted-foreground">Loading…</div>
           ) : conversations.length === 0 ? (
@@ -101,7 +101,7 @@ function InboxPage() {
           )}
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
           {active && user ? (
             <ChatThread conversationId={active} currentUserId={user.id} />
           ) : (

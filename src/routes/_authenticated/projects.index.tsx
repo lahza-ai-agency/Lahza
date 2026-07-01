@@ -93,7 +93,7 @@ function ProjectsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">Projects</h1>
           <p className="text-sm text-muted-foreground">Manage delivery across your client work.</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -161,7 +161,7 @@ function ProjectsPage() {
           {projects.map((p) => (
             <div
               key={p.id}
-              className="group flex flex-col rounded-2xl border border-border bg-card p-5"
+              className="group flex flex-col rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5"
             >
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-semibold">{p.name}</h3>

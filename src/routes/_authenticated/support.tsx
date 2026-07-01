@@ -62,7 +62,7 @@ function SupportPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Support</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight">Support</h1>
         <p className="text-sm text-muted-foreground">Client tickets across every account.</p>
       </div>
 
@@ -160,7 +160,7 @@ function StaffTicketThread({ ticket, clientLabel }: { ticket: Ticket; clientLabe
   });
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-border bg-card">
+    <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-2 border-b border-border p-4">
         <div>
           <h3 className="font-semibold">{ticket.subject}</h3>

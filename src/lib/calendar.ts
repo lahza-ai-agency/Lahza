@@ -1,7 +1,7 @@
 import type { Meeting } from "@/lib/meetings";
 import type { Project } from "@/lib/projects";
 import type { ClientDirectoryEntry } from "@/lib/clients";
-import type { Lead } from "@/lib/crm";
+import type { Contact } from "@/lib/crm";
 
 export type CalendarEventType = "MEETING" | "DELIVERABLE" | "RENEWAL";
 
@@ -18,26 +18,27 @@ export function buildCalendarEvents(data: {
   meetings: Meeting[];
   projects: Project[];
   clients: ClientDirectoryEntry[];
-  leads: Lead[];
+  contacts: Contact[];
 }): CalendarEvent[] {
-  const { meetings, projects, clients, leads } = data;
+  const { meetings, projects, clients, contacts } = data;
   const clientName = (id: string | null) => {
     if (!id) return "Unassigned";
     const c = clients.find((c) => c.id === id);
-    return c?.name ?? c?.company ?? c?.email ?? "Client";
+    if (c) return c.name ?? c.company ?? c.email ?? "Client";
+    const contact = contacts.find((c) => c.id === id);
+    return contact?.name ?? contact?.company ?? "Contact";
   };
-  const leadName = (id: string | null) => leads.find((l) => l.id === id)?.name ?? "Lead";
 
   const events: CalendarEvent[] = [];
 
   for (const m of meetings) {
-    const subject = m.lead_id ? leadName(m.lead_id) : clientName(m.client_id);
+    const subjectId = m.client_id ?? m.lead_id;
     events.push({
       id: `meeting-${m.id}`,
       type: "MEETING",
       title: m.title,
       date: m.scheduled_at,
-      subtitle: subject,
+      subtitle: clientName(subjectId),
     });
   }
 

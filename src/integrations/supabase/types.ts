@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          actor_id: string | null
+          action: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string
+        }
+        Insert: {
+          actor_id?: string | null
+          action: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type: string
+        }
+        Update: {
+          actor_id?: string | null
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string
+        }
+        Relationships: []
+      }
+      credentials: {
+        Row: {
+          category: Database["public"]["Enums"]["credential_category"]
+          created_at: string
+          created_by: string | null
+          id: string
+          label: string
+          last_rotated_at: string | null
+          notes: string | null
+          service: string | null
+          updated_at: string
+          vault_secret_id: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["credential_category"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label: string
+          last_rotated_at?: string | null
+          notes?: string | null
+          service?: string | null
+          updated_at?: string
+          vault_secret_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["credential_category"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string
+          last_rotated_at?: string | null
+          notes?: string | null
+          service?: string | null
+          updated_at?: string
+          vault_secret_id?: string
+        }
+        Relationships: []
+      }
       case_studies: {
         Row: {
           challenge: string | null
@@ -85,39 +154,60 @@ export type Database = {
           billing_cycle: string | null
           company: string | null
           created_at: string
+          email: string | null
           id: string
+          name: string | null
           notes: string | null
+          owner_id: string | null
           phone: string | null
+          position: number
           renewal_date: string | null
+          source: Database["public"]["Enums"]["lead_source"]
+          status: Database["public"]["Enums"]["contact_status"]
           subscription_plan: string | null
           updated_at: string
           user_id: string | null
+          value: number
           website: string | null
         }
         Insert: {
           billing_cycle?: string | null
           company?: string | null
           created_at?: string
+          email?: string | null
           id?: string
+          name?: string | null
           notes?: string | null
+          owner_id?: string | null
           phone?: string | null
+          position?: number
           renewal_date?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["contact_status"]
           subscription_plan?: string | null
           updated_at?: string
           user_id?: string | null
+          value?: number
           website?: string | null
         }
         Update: {
           billing_cycle?: string | null
           company?: string | null
           created_at?: string
+          email?: string | null
           id?: string
+          name?: string | null
           notes?: string | null
+          owner_id?: string | null
           phone?: string | null
+          position?: number
           renewal_date?: string | null
+          source?: Database["public"]["Enums"]["lead_source"]
+          status?: Database["public"]["Enums"]["contact_status"]
           subscription_plan?: string | null
           updated_at?: string
           user_id?: string | null
+          value?: number
           website?: string | null
         }
         Relationships: []
@@ -663,6 +753,25 @@ export type Database = {
     }
     Enums: {
       app_role: "SUPER_ADMIN" | "ADMIN" | "TEAM_MEMBER" | "CLIENT"
+      credential_category:
+        | "AI_KEYS"
+        | "CLOUD_HOSTING"
+        | "PAYMENTS"
+        | "COMMUNICATIONS"
+        | "SOCIAL_ACCOUNTS"
+        | "DOMAINS"
+        | "DATABASES"
+        | "OTHER"
+      contact_status:
+        | "LEAD"
+        | "QUALIFIED"
+        | "PROPOSAL_SENT"
+        | "NEGOTIATION"
+        | "WON"
+        | "ACTIVE_CLIENT"
+        | "INACTIVE_CLIENT"
+        | "LOST"
+        | "ARCHIVED"
       lead_source:
         | "WEBSITE"
         | "REFERRAL"
@@ -813,6 +922,27 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["SUPER_ADMIN", "ADMIN", "TEAM_MEMBER", "CLIENT"],
+      credential_category: [
+        "AI_KEYS",
+        "CLOUD_HOSTING",
+        "PAYMENTS",
+        "COMMUNICATIONS",
+        "SOCIAL_ACCOUNTS",
+        "DOMAINS",
+        "DATABASES",
+        "OTHER",
+      ],
+      contact_status: [
+        "LEAD",
+        "QUALIFIED",
+        "PROPOSAL_SENT",
+        "NEGOTIATION",
+        "WON",
+        "ACTIVE_CLIENT",
+        "INACTIVE_CLIENT",
+        "LOST",
+        "ARCHIVED",
+      ],
       lead_source: [
         "WEBSITE",
         "REFERRAL",

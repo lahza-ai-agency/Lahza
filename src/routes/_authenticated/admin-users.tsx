@@ -123,7 +123,7 @@ function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Account Management</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">Account Management</h1>
           <p className="text-sm text-muted-foreground">
             Manage team members and client accounts.
           </p>
@@ -203,7 +203,7 @@ function AdminUsersPage() {
         />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
         {isLoading ? (
           <div className="p-10 text-center text-sm text-muted-foreground">Loading…</div>
         ) : filtered.length === 0 ? (

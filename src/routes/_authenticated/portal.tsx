@@ -86,7 +86,7 @@ function PortalPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight">Welcome back</h1>
         <p className="text-sm text-muted-foreground">{user?.email}</p>
       </div>
 
@@ -111,15 +111,15 @@ function PortalPage() {
 
         <TabsContent value="overview" className="mt-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
               <span className="text-sm text-muted-foreground">Active projects</span>
               <div className="mt-2 text-3xl font-bold">{active.length}</div>
             </div>
-            <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
               <span className="text-sm text-muted-foreground">Total projects</span>
               <div className="mt-2 text-3xl font-bold">{projects.length}</div>
             </div>
-            <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
               <span className="text-sm text-muted-foreground">Completed</span>
               <div className="mt-2 text-3xl font-bold">
                 {projects.filter((p) => p.status === "COMPLETED").length}
@@ -139,7 +139,7 @@ function PortalPage() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {projects.map((p) => (
-                  <div key={p.id} className="rounded-2xl border border-border bg-card p-5">
+                  <div key={p.id} className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
                     <div className="flex items-start justify-between gap-2">
                       <h3 className="font-semibold">{p.name}</h3>
                       <Badge variant="secondary">{statusLabel[p.status]}</Badge>
@@ -228,7 +228,7 @@ function ScheduleTab() {
             No active plan on file yet — reach out if you'd like to set one up.
           </div>
         ) : (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
             <div>
               <p className="text-lg font-semibold">{subscription.subscription_plan}</p>
               <p className="text-sm text-muted-foreground">
@@ -355,14 +355,14 @@ function BillingTab() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
           <span className="text-sm text-muted-foreground">Outstanding balance</span>
           <div className="mt-2 text-3xl font-bold">${totalOutstanding.toLocaleString()}</div>
           <p className="mt-1 text-xs text-muted-foreground">
             {outstanding.length} invoice{outstanding.length === 1 ? "" : "s"} due
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
           <span className="text-sm text-muted-foreground">Total paid</span>
           <div className="mt-2 text-3xl font-bold">${totalPaid.toLocaleString()}</div>
         </div>
@@ -445,7 +445,7 @@ function DocumentsTab() {
       {documents.map((doc) => (
         <div
           key={doc.id}
-          className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-4"
         >
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -663,7 +663,7 @@ function TicketThread({ ticket }: { ticket: Ticket }) {
   });
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-border bg-card">
+    <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-2 border-b border-border p-4">
         <div>
           <h3 className="font-semibold">{ticket.subject}</h3>

@@ -21,14 +21,14 @@ function MessagesPage() {
   return (
     <div className="mx-auto flex h-[calc(100vh-7rem)] max-w-3xl flex-col">
       <div className="mb-4">
-        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+        <h1 className="flex items-center gap-2 text-2xl font-display font-semibold tracking-tight">
           <MessageSquare className="h-6 w-6 text-primary" /> Messages
         </h1>
         <p className="text-sm text-muted-foreground">
           Chat directly with the Lahza team.
         </p>
       </div>
-      <div className="flex-1 overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="flex-1 overflow-hidden rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
         {isLoading || !conversation || !user ? (
           <div className="grid h-full place-items-center text-sm text-muted-foreground">
             Loading…

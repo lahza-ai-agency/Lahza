@@ -63,11 +63,14 @@ export interface ClientOption {
   label: string;
 }
 
-/** Staff: list clients for an assignment dropdown, labelled by company + contact name/email. */
+/** Staff: list clients for an assignment dropdown, labelled by company + contact name/email.
+ * Scoped to contacts who've actually reached client status — earlier-stage
+ * leads don't have projects assigned to them yet. */
 export async function fetchClientOptions(): Promise<ClientOption[]> {
   const { data: clients, error } = await supabase
     .from("clients")
-    .select("id, company, user_id")
+    .select("id, company, user_id, name, email")
+    .in("status", ["WON", "ACTIVE_CLIENT", "INACTIVE_CLIENT"])
     .order("created_at", { ascending: false });
   if (error) throw error;
   const list = clients ?? [];
@@ -81,7 +84,7 @@ export async function fetchClientOptions(): Promise<ClientOption[]> {
 
   return list.map((c) => {
     const profile = c.user_id ? profileMap.get(c.user_id) : undefined;
-    const contact = profile?.name || profile?.email;
+    const contact = profile?.name || profile?.email || c.name || c.email;
     const label =
       c.company && contact ? `${c.company} — ${contact}` : c.company || contact || "Unnamed client";
     return { id: c.id, label };

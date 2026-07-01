@@ -2,14 +2,14 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  fetchLeads,
-  createLead,
-  updateLeadStatus,
-  deleteLead,
-  convertLeadToClient,
-  LEAD_STATUSES,
-  type Lead,
-  type LeadStatus,
+  fetchContacts,
+  createContact,
+  updateContactStatus,
+  deleteContact,
+  markContactActiveClient,
+  CONTACT_STATUSES,
+  type Contact,
+  type ContactStatus,
   type LeadSource,
 } from "@/lib/crm";
 import {
@@ -86,64 +86,70 @@ export const Route = createFileRoute("/_authenticated/crm")({
 
 function CrmPage() {
   const qc = useQueryClient();
-  const { data: leads = [], isLoading } = useQuery({ queryKey: ["leads"], queryFn: fetchLeads });
+  const { data: contacts = [], isLoading } = useQuery({
+    queryKey: ["contacts"],
+    queryFn: fetchContacts,
+  });
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
   const moveMut = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: LeadStatus }) =>
-      updateLeadStatus(id, status, 0),
+    mutationFn: ({ id, status }: { id: string; status: ContactStatus }) =>
+      updateContactStatus(id, status, 0),
     onMutate: async ({ id, status }) => {
-      await qc.cancelQueries({ queryKey: ["leads"] });
-      const prev = qc.getQueryData<Lead[]>(["leads"]);
-      qc.setQueryData<Lead[]>(["leads"], (old) =>
-        (old ?? []).map((l) => (l.id === id ? { ...l, status } : l)),
+      await qc.cancelQueries({ queryKey: ["contacts"] });
+      const prev = qc.getQueryData<Contact[]>(["contacts"]);
+      qc.setQueryData<Contact[]>(["contacts"], (old) =>
+        (old ?? []).map((c) => (c.id === id ? { ...c, status } : c)),
       );
       return { prev };
     },
     onError: (_e, _v, ctx) => {
-      if (ctx?.prev) qc.setQueryData(["leads"], ctx.prev);
-      toast.error("Could not move lead");
+      if (ctx?.prev) qc.setQueryData(["contacts"], ctx.prev);
+      toast.error("Could not move contact");
     },
-    onSettled: () => qc.invalidateQueries({ queryKey: ["leads"] }),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["contacts"] });
+      qc.invalidateQueries({ queryKey: ["clients-directory"] });
+    },
   });
 
   const createMut = useMutation({
-    mutationFn: createLead,
+    mutationFn: createContact,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["leads"] });
-      toast.success("Lead added");
+      qc.invalidateQueries({ queryKey: ["contacts"] });
+      toast.success("Contact added");
       setOpen(false);
     },
-    onError: () => toast.error("Could not add lead"),
+    onError: () => toast.error("Could not add contact"),
   });
 
   const deleteMut = useMutation({
-    mutationFn: deleteLead,
+    mutationFn: deleteContact,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["leads"] });
-      toast.success("Lead deleted");
+      qc.invalidateQueries({ queryKey: ["contacts"] });
+      toast.success("Contact deleted");
     },
   });
 
-  const convertMut = useMutation({
-    mutationFn: convertLeadToClient,
+  const promoteMut = useMutation({
+    mutationFn: markContactActiveClient,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["leads"] });
+      qc.invalidateQueries({ queryKey: ["contacts"] });
       qc.invalidateQueries({ queryKey: ["clients-directory"] });
       qc.invalidateQueries({ queryKey: ["client-options"] });
-      toast.success("Lead converted to client — you can now create a project for them.");
+      toast.success("Marked as an active client.");
     },
-    onError: () => toast.error("Could not convert lead to client"),
+    onError: () => toast.error("Could not update this contact"),
   });
 
-  const filtered = leads.filter((l) => {
+  const filtered = contacts.filter((c) => {
     const q = search.toLowerCase();
     return (
       !q ||
-      l.name.toLowerCase().includes(q) ||
-      (l.company ?? "").toLowerCase().includes(q) ||
-      (l.email ?? "").toLowerCase().includes(q)
+      (c.name ?? "").toLowerCase().includes(q) ||
+      (c.company ?? "").toLowerCase().includes(q) ||
+      (c.email ?? "").toLowerCase().includes(q)
     );
   });
 
@@ -157,7 +163,7 @@ function CrmPage() {
       phone: String(fd.get("phone") || ""),
       value: Number(fd.get("value") || 0),
       source: String(fd.get("source") || "WEBSITE") as LeadSource,
-      status: String(fd.get("status") || "NEW") as LeadStatus,
+      status: String(fd.get("status") || "LEAD") as ContactStatus,
       notes: String(fd.get("notes") || ""),
     });
   }
@@ -167,7 +173,7 @@ function CrmPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">CRM</h1>
         <p className="text-sm text-muted-foreground">
-          Manage your pipeline and your registered clients.
+          One pipeline for every contact — from first touch to active client.
         </p>
       </div>
 
@@ -187,7 +193,7 @@ function CrmPage() {
         <TabsContent value="pipeline" className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">
-              Drag leads across stages to update their status.
+              Drag contacts across stages to update where they are in the lifecycle.
             </p>
             <div className="flex items-center gap-2">
               <div className="relative">
@@ -195,19 +201,19 @@ function CrmPage() {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search leads…"
+                  placeholder="Search contacts…"
                   className="w-52 ps-8"
                 />
               </div>
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                   <Button className="gap-1.5">
-                    <Plus className="h-4 w-4" /> Lead
+                    <Plus className="h-4 w-4" /> Contact
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>New Lead</DialogTitle>
+                    <DialogTitle>New Contact</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleCreate} className="space-y-3">
                     <div className="space-y-1.5">
@@ -237,12 +243,12 @@ function CrmPage() {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <Label>Stage</Label>
-                        <Select name="status" defaultValue="NEW">
+                        <Select name="status" defaultValue="LEAD">
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {LEAD_STATUSES.map((s) => (
+                            {CONTACT_STATUSES.map((s) => (
                               <SelectItem key={s.key} value={s.key}>
                                 {s.label}
                               </SelectItem>
@@ -274,7 +280,7 @@ function CrmPage() {
                     </div>
                     <DialogFooter>
                       <Button type="submit" disabled={createMut.isPending}>
-                        Add lead
+                        Add contact
                       </Button>
                     </DialogFooter>
                   </form>
@@ -286,30 +292,30 @@ function CrmPage() {
           {isLoading ? (
             <p className="text-sm text-muted-foreground">Loading…</p>
           ) : (
-            <KanbanBoard<Lead>
-              columns={LEAD_STATUSES.map((s) => ({ key: s.key, label: s.label }))}
+            <KanbanBoard<Contact>
+              columns={CONTACT_STATUSES.map((s) => ({ key: s.key, label: s.label }))}
               items={filtered}
-              getId={(l) => l.id}
-              getColumn={(l) => l.status}
-              onMove={(id, status) => moveMut.mutate({ id, status: status as LeadStatus })}
+              getId={(c) => c.id}
+              getColumn={(c) => c.status}
+              onMove={(id, status) => moveMut.mutate({ id, status: status as ContactStatus })}
               columnFooter={(_k, items) => (
                 <div className="text-xs text-muted-foreground">
-                  ${items.reduce((s, l) => s + Number(l.value || 0), 0).toLocaleString()}
+                  ${items.reduce((s, c) => s + Number(c.value || 0), 0).toLocaleString()}
                 </div>
               )}
-              renderCard={(l) => (
+              renderCard={(c) => (
                 <div className="group space-y-1">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-sm font-medium">{l.name}</span>
+                    <span className="text-sm font-medium">{c.name ?? c.company ?? "Unnamed"}</span>
                     <div className="flex items-center gap-1.5">
-                      {l.status !== "WON" && (
+                      {c.status !== "ACTIVE_CLIENT" && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            convertMut.mutate(l);
+                            promoteMut.mutate(c);
                           }}
-                          disabled={convertMut.isPending}
-                          title="Convert to client"
+                          disabled={promoteMut.isPending}
+                          title="Mark as active client"
                           className="opacity-0 transition-opacity group-hover:opacity-100"
                         >
                           <UserCheck className="h-3.5 w-3.5 text-muted-foreground hover:text-primary" />
@@ -318,7 +324,7 @@ function CrmPage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          deleteMut.mutate(l.id);
+                          deleteMut.mutate(c.id);
                         }}
                         className="opacity-0 transition-opacity group-hover:opacity-100"
                       >
@@ -326,14 +332,14 @@ function CrmPage() {
                       </button>
                     </div>
                   </div>
-                  {l.company && <p className="text-xs text-muted-foreground">{l.company}</p>}
+                  {c.company && <p className="text-xs text-muted-foreground">{c.company}</p>}
                   <div className="flex items-center justify-between pt-1">
                     <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                      {l.source}
+                      {c.source}
                     </span>
-                    {Number(l.value) > 0 && (
+                    {Number(c.value) > 0 && (
                       <span className="text-xs font-semibold text-primary">
-                        ${Number(l.value).toLocaleString()}
+                        ${Number(c.value).toLocaleString()}
                       </span>
                     )}
                   </div>
@@ -457,7 +463,7 @@ function ClientsTab() {
         </Dialog>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
         {isLoading ? (
           <div className="p-6 text-sm text-muted-foreground">Loading…</div>
         ) : filtered.length === 0 ? (
@@ -625,7 +631,7 @@ function ClientSubscriptionPanel({ client }: { client: ClientDetail }) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["client-detail", client.id] });
       qc.invalidateQueries({ queryKey: ["clients-directory"] });
-      qc.invalidateQueries({ queryKey: ["clients-directory-lite"] });
+      qc.invalidateQueries({ queryKey: ["clients-directory"] });
       qc.invalidateQueries({ queryKey: ["calendar-events"] });
       setEditing(false);
       toast.success("Subscription updated");
@@ -665,7 +671,7 @@ function ClientSubscriptionPanel({ client }: { client: ClientDetail }) {
     return (
       <form
         onSubmit={handleSave}
-        className="space-y-3 rounded-xl border border-border bg-card/50 p-4"
+        className="space-y-3 rounded-xl border border-white/10 bg-card/40 backdrop-blur-xl p-4"
       >
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/60">
           Subscription
@@ -703,7 +709,7 @@ function ClientSubscriptionPanel({ client }: { client: ClientDetail }) {
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card/50 p-4">
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-card/40 backdrop-blur-xl p-4">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/60">
           Subscription
@@ -1011,27 +1017,21 @@ function ClientDocumentsPanel({ clientId }: { clientId: string }) {
 function MeetingsTab() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [subjectType, setSubjectType] = useState<"lead" | "client">("lead");
   const [subjectId, setSubjectId] = useState<string>("");
 
   const { data: meetings = [], isLoading } = useQuery({
     queryKey: ["meetings"],
     queryFn: fetchMeetings,
   });
-  const { data: leads = [] } = useQuery({ queryKey: ["leads"], queryFn: fetchLeads });
-  const { data: clients = [] } = useQuery({
-    queryKey: ["clients-directory-lite"],
-    queryFn: fetchClientsDirectory,
-  });
+  const { data: contacts = [] } = useQuery({ queryKey: ["contacts"], queryFn: fetchContacts });
 
-  const leadNameMap = new Map(leads.map((l) => [l.id, l.name]));
-  const clientNameMap = new Map(
-    clients.map((c) => [c.id, c.name ?? c.company ?? c.email ?? "Client"]),
+  const contactNameMap = new Map(
+    contacts.map((c) => [c.id, c.name ?? c.company ?? c.email ?? "Contact"]),
   );
 
   function subjectLabel(m: Meeting) {
-    if (m.lead_id) return leadNameMap.get(m.lead_id) ?? "Lead";
-    if (m.client_id) return clientNameMap.get(m.client_id) ?? "Client";
+    const id = m.client_id ?? m.lead_id;
+    if (id) return contactNameMap.get(id) ?? "Contact";
     return "—";
   }
 
@@ -1064,8 +1064,7 @@ function MeetingsTab() {
       scheduled_at: new Date(`${date}T${time}`).toISOString(),
       duration_minutes: Number(fd.get("duration_minutes") || 30),
       notes: String(fd.get("notes") || "") || null,
-      lead_id: subjectType === "lead" ? subjectId : null,
-      client_id: subjectType === "client" ? subjectId : null,
+      client_id: subjectId,
     });
   }
 
@@ -1091,46 +1090,20 @@ function MeetingsTab() {
                 <Label>Title</Label>
                 <Input name="title" placeholder="Discovery call" required />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label>With</Label>
-                  <Select
-                    value={subjectType}
-                    onValueChange={(v) => {
-                      setSubjectType(v as "lead" | "client");
-                      setSubjectId("");
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="lead">Lead</SelectItem>
-                      <SelectItem value="client">Client</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>{subjectType === "lead" ? "Lead" : "Client"}</Label>
-                  <Select value={subjectId} onValueChange={setSubjectId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select…" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {subjectType === "lead"
-                        ? leads.map((lead) => (
-                            <SelectItem key={lead.id} value={lead.id}>
-                              {lead.name}
-                            </SelectItem>
-                          ))
-                        : clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
-                              {client.name ?? client.company ?? client.email ?? "Client"}
-                            </SelectItem>
-                          ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-1.5">
+                <Label>With</Label>
+                <Select value={subjectId} onValueChange={setSubjectId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a contact…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {contacts.map((contact) => (
+                      <SelectItem key={contact.id} value={contact.id}>
+                        {contact.name ?? contact.company ?? "Contact"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5">
@@ -1174,7 +1147,7 @@ function MeetingsTab() {
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : meetings.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-16 text-center text-muted-foreground">
+        <div className="rounded-2xl border border-dashed border-white/15 p-16 text-center text-muted-foreground">
           <CalendarClock className="mx-auto mb-3 h-8 w-8 opacity-50" />
           No meetings scheduled yet.
         </div>
@@ -1233,7 +1206,7 @@ function MeetingRow({
 }) {
   const dt = new Date(meeting.scheduled_at);
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3">
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-card/40 backdrop-blur-xl p-3">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-primary/10 text-primary">
           <span className="text-[10px] font-medium leading-none">

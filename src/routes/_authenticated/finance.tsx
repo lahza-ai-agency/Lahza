@@ -61,7 +61,7 @@ function StatCard({
   tone: "positive" | "negative" | "neutral";
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-5">
+    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
       <span
         className={
           "grid h-10 w-10 shrink-0 place-items-center rounded-xl " +
@@ -139,7 +139,7 @@ function FinancePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Finance</h1>
+        <h1 className="text-2xl font-display font-semibold tracking-tight">Finance</h1>
         <p className="text-sm text-muted-foreground">
           Track revenue, expenses, and client invoices across the agency.
         </p>
@@ -246,7 +246,7 @@ function FinancePage() {
             />
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
             <h2 className="text-sm font-semibold">Revenue vs. expenses by month</h2>
             <div className="mt-4">
               {chartData.length === 0 ? (
@@ -290,7 +290,7 @@ function FinancePage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card">
+          <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
             <div className="flex items-center justify-between border-b border-border p-4">
               <h2 className="text-sm font-semibold">All entries</h2>
               <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
@@ -425,7 +425,7 @@ function InvoicesPanel() {
         and payment status across every client.
       </p>
 
-      <div className="rounded-2xl border border-border bg-card">
+      <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl">
         <div className="flex items-center justify-between border-b border-border p-4">
           <h2 className="text-sm font-semibold">All invoices</h2>
           <Tabs

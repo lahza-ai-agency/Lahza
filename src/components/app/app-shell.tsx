@@ -41,6 +41,7 @@ import {
   Wallet,
   LifeBuoy,
   CalendarDays,
+  ShieldCheck,
 } from "lucide-react";
 
 type Access = "staff" | "client" | "admin" | "all";
@@ -99,6 +100,7 @@ const groups: NavGroup[] = [
         access: "admin",
       },
       { to: "/finance", label: "Finance", icon: Wallet, access: "admin" },
+      { to: "/vault", label: "Credentials Vault", icon: ShieldCheck, access: "admin" },
     ],
   },
   {
@@ -209,11 +211,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   // ---- Sidebar inner content (shared between desktop and mobile) ----
   function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
     return (
-      <div className="flex h-full flex-col">
+      <div className="relative flex h-full flex-col">
         {/* Logo + collapse toggle */}
         <div
           className={cn(
-            "flex h-14 shrink-0 items-center border-b border-sidebar-border",
+            "flex h-14 shrink-0 items-center border-b border-white/10",
             collapsed && !isMobile ? "justify-center px-0" : "justify-between px-4",
           )}
         >
@@ -231,7 +233,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {!isMobile && (
             <button
               onClick={toggleCollapsed}
-              className="grid h-6 w-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
+              className="grid h-6 w-6 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               <ChevronLeft
@@ -261,22 +263,22 @@ export function AppShell({ children }: { children: ReactNode }) {
                       to={item.to}
                       onClick={() => isMobile && setMobileOpen(false)}
                       className={cn(
-                        "group relative flex items-center gap-3 rounded-lg transition-all duration-150",
+                        "group relative flex items-center gap-3 rounded-xl transition-all duration-200",
                         collapsed && !isMobile ? "h-9 w-9 justify-center mx-auto" : "h-9 px-3",
                         active
-                          ? "bg-primary/10 text-foreground"
-                          : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+                          ? "bg-gradient-to-r from-aurora-violet/20 to-aurora-cyan/10 text-foreground shadow-[0_0_24px_-8px_var(--aurora-violet)]"
+                          : "text-muted-foreground hover:bg-white/5 hover:text-foreground",
                       )}
                     >
                       {/* Active indicator — left border pill */}
                       {active && (
-                        <span className="absolute inset-y-1.5 start-0 w-0.5 rounded-full bg-primary" />
+                        <span className="absolute inset-y-1.5 start-0 w-0.5 rounded-full bg-gradient-to-b from-aurora-violet to-aurora-cyan" />
                       )}
 
                       <item.icon
                         className={cn(
                           "h-4 w-4 shrink-0",
-                          active ? "text-primary" : "group-hover:text-foreground",
+                          active ? "text-aurora-cyan" : "group-hover:text-foreground",
                         )}
                       />
 
@@ -286,7 +288,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                             {item.label}
                           </span>
                           {showBadge && (
-                            <span className="grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-primary px-1.5 text-[10px] font-bold tabular-nums text-primary-foreground">
+                            <span className="grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-gradient-to-br from-aurora-violet to-aurora-cyan px-1.5 text-[10px] font-bold tabular-nums text-white">
                               {unread > 99 ? "99+" : unread}
                             </span>
                           )}
@@ -295,7 +297,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
                       {/* Collapsed badge dot */}
                       {collapsed && !isMobile && showBadge && (
-                        <span className="absolute -top-0.5 -end-0.5 h-2 w-2 rounded-full bg-primary" />
+                        <span className="absolute -top-0.5 -end-0.5 h-2 w-2 rounded-full bg-aurora-cyan" />
                       )}
                     </Link>
                   );
@@ -321,14 +323,14 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         {/* Bottom: user card */}
-        <div className={cn("shrink-0 border-t border-sidebar-border px-2 py-3 space-y-1")}>
+        <div className={cn("shrink-0 border-t border-white/10 px-2 py-3 space-y-1")}>
           {/* User */}
           {collapsed && !isMobile ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg hover:bg-sidebar-accent">
+                <button className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg hover:bg-white/5">
                   <Avatar className="h-7 w-7">
-                    <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
+                    <AvatarFallback className="bg-gradient-to-br from-aurora-violet/30 to-aurora-cyan/20 text-aurora-cyan text-xs font-bold">
                       {initials(user?.email)}
                     </AvatarFallback>
                   </Avatar>
@@ -356,9 +358,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-sidebar-accent/60">
+                <button className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-white/5">
                   <Avatar className="h-7 w-7 shrink-0">
-                    <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
+                    <AvatarFallback className="bg-gradient-to-br from-aurora-violet/30 to-aurora-cyan/20 text-aurora-cyan text-xs font-bold">
                       {initials(user?.email)}
                     </AvatarFallback>
                   </Avatar>
@@ -402,17 +404,19 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <div className="relative flex min-h-screen w-full bg-background">
+      <div className="pointer-events-none fixed inset-0 bg-noise" />
       <ProfileGate />
       <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
 
       {/* Desktop sidebar */}
       <motion.aside
-        animate={{ width: collapsed ? 56 : 240 }}
+        animate={{ width: collapsed ? 60 : 248 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
-        className="relative hidden shrink-0 border-e border-sidebar-border bg-sidebar md:block overflow-hidden"
+        className="relative hidden shrink-0 border-e border-white/10 bg-sidebar/80 backdrop-blur-2xl md:block overflow-hidden"
         style={{ minWidth: 0 }}
       >
+        <div className="pointer-events-none absolute inset-0 bg-aurora-mesh opacity-40" />
         <SidebarContent />
       </motion.aside>
 
@@ -425,7 +429,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-40 bg-black/60 md:hidden"
+              className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden"
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
@@ -433,7 +437,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ duration: 0.22, ease: "easeOut" }}
-              className="fixed inset-y-0 start-0 z-50 w-64 border-e border-sidebar-border bg-sidebar md:hidden"
+              className="fixed inset-y-0 start-0 z-50 w-64 border-e border-white/10 bg-sidebar/95 backdrop-blur-2xl md:hidden"
             >
               <SidebarContent isMobile />
             </motion.aside>
@@ -442,9 +446,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </AnimatePresence>
 
       {/* Main content */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="relative flex min-w-0 flex-1 flex-col">
         {/* Top header */}
-        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-white/10 bg-background/70 px-4 backdrop-blur-xl">
           {/* Mobile menu button */}
           <Button
             variant="ghost"
@@ -465,11 +469,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Command palette trigger */}
           <button
             onClick={() => setCmdOpen(true)}
-            className="hidden items-center gap-2 rounded-lg border border-border bg-card/50 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-card hover:text-foreground md:flex"
+            className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-muted-foreground backdrop-blur-xl transition-colors hover:bg-white/10 hover:text-foreground md:flex"
           >
             <Search className="h-3.5 w-3.5" />
             <span>Search…</span>
-            <span className="ms-2 flex items-center gap-0.5 rounded border border-border bg-background px-1 py-0.5 font-mono text-[10px] text-muted-foreground">
+            <span className="ms-2 flex items-center gap-0.5 rounded border border-white/10 bg-background/60 px-1 py-0.5 font-mono-data text-[10px] text-muted-foreground">
               <span>⌘</span>K
             </span>
           </button>
@@ -489,7 +493,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
               {unread > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[9px] font-bold text-primary-foreground">
+                <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-gradient-to-br from-aurora-violet to-aurora-cyan px-1 text-[9px] font-bold text-white">
                   {unread > 9 ? "9+" : unread}
                 </span>
               )}
@@ -499,9 +503,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* User avatar (header) */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm transition-colors hover:bg-accent">
+              <button className="flex items-center gap-2 rounded-full px-2 py-1 text-sm transition-colors hover:bg-white/5">
                 <Avatar className="h-7 w-7">
-                  <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
+                  <AvatarFallback className="bg-gradient-to-br from-aurora-violet/30 to-aurora-cyan/20 text-aurora-cyan text-xs font-bold">
                     {initials(user?.email)}
                   </AvatarFallback>
                 </Avatar>
@@ -538,7 +542,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </header>
 
-        <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="relative min-w-0 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

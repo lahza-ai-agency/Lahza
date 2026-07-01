@@ -21,6 +21,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies.index'
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies.$slug'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthenticatedVaultRouteImport } from './routes/_authenticated/vault'
 import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
@@ -96,6 +97,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedVaultRoute = AuthenticatedVaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
   id: '/support',
@@ -203,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof AuthenticatedProjectsRouteWithChildren
   '/settings': typeof AuthenticatedSettingsRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/vault': typeof AuthenticatedVaultRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/portal': typeof AuthenticatedPortalRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/support': typeof AuthenticatedSupportRoute
+  '/vault': typeof AuthenticatedVaultRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/case-studies': typeof CaseStudiesIndexRoute
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/_authenticated/projects': typeof AuthenticatedProjectsRouteWithChildren
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/support': typeof AuthenticatedSupportRoute
+  '/_authenticated/vault': typeof AuthenticatedVaultRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/settings'
     | '/support'
+    | '/vault'
     | '/auth/callback'
     | '/case-studies/$slug'
     | '/case-studies/'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/settings'
     | '/support'
+    | '/vault'
     | '/auth/callback'
     | '/case-studies/$slug'
     | '/case-studies'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/_authenticated/projects'
     | '/_authenticated/settings'
     | '/_authenticated/support'
+    | '/_authenticated/vault'
     | '/auth/callback'
     | '/case-studies/$slug'
     | '/case-studies/'
@@ -455,6 +467,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/vault': {
+      id: '/_authenticated/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof AuthenticatedVaultRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/support': {
       id: '/_authenticated/support'
@@ -600,6 +619,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRouteWithChildren
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
+  AuthenticatedVaultRoute: typeof AuthenticatedVaultRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -616,6 +636,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProjectsRoute: AuthenticatedProjectsRouteWithChildren,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSupportRoute: AuthenticatedSupportRoute,
+  AuthenticatedVaultRoute: AuthenticatedVaultRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

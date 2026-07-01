@@ -29,7 +29,6 @@ const tiers = [
     desc: "For small businesses automating customer communication and leads.",
     features: [
       "AI chatbot — website, WhatsApp & social",
-      "Automated support responses",
       "Lead collection & management",
       "Basic CRM automation",
       "Data entry automation",
@@ -75,7 +74,6 @@ const tiers = [
 const ALL_FEATURES = [
   "Auto Facebook groups poster automation",
   "AI chatbot — website, WhatsApp & social",
-  "Automated support responses",
   "Lead collection & management",
   "Basic CRM automation",
   "Data entry automation",
@@ -90,9 +88,6 @@ const ALL_FEATURES = [
   "Automated cold outreach",
   "Internal knowledge base AI",
   "Custom website / web app",
-  "Branding & design",
-  "SEO & content",
-  "Growth & analytics dashboards",
   "Custom AI systems & consulting",
 ];
 

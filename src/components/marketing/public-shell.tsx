@@ -4,9 +4,10 @@ import { SiteFooter } from "./site-footer";
 
 export function PublicShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-background">
+      <div className="pointer-events-none fixed inset-0 bg-noise" />
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className="relative flex-1">{children}</main>
       <SiteFooter />
     </div>
   );

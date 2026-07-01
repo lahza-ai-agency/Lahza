@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchMeetings } from "@/lib/meetings";
 import { fetchProjects } from "@/lib/projects";
 import { fetchClientsDirectory } from "@/lib/clients";
-import { fetchLeads } from "@/lib/crm";
+import { fetchContacts } from "@/lib/crm";
 import { buildCalendarEvents, type CalendarEvent, type CalendarEventType } from "@/lib/calendar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,13 +48,13 @@ function CalendarPage() {
     queryKey: ["clients-directory-lite"],
     queryFn: fetchClientsDirectory,
   });
-  const { data: leads = [], isLoading: l4 } = useQuery({
-    queryKey: ["calendar-leads"],
-    queryFn: fetchLeads,
+  const { data: contacts = [], isLoading: l4 } = useQuery({
+    queryKey: ["calendar-contacts"],
+    queryFn: fetchContacts,
   });
 
   const isLoading = l1 || l2 || l3 || l4;
-  const allEvents = buildCalendarEvents({ meetings, projects, clients, leads });
+  const allEvents = buildCalendarEvents({ meetings, projects, clients, contacts });
   const events = typeFilter === "ALL" ? allEvents : allEvents.filter((e) => e.type === typeFilter);
 
   const eventsByDate = new Map<string, CalendarEvent[]>();
@@ -87,7 +87,7 @@ function CalendarPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Calendar</h1>
+          <h1 className="text-2xl font-display font-semibold tracking-tight">Calendar</h1>
           <p className="text-sm text-muted-foreground">
             Every meeting, deliverable, and renewal across all clients.
           </p>
@@ -116,7 +116,7 @@ function CalendarPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-5">
           <div className="flex items-center justify-between pb-4">
             <h3 className="text-sm font-semibold">
               {cursor.toLocaleDateString(undefined, { month: "long", year: "numeric" })}
@@ -209,7 +209,7 @@ function CalendarPage() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-4">
+        <div className="rounded-2xl border border-white/10 bg-card/50 backdrop-blur-xl p-4">
           <h3 className="mb-3 text-sm font-semibold">{selectedKey ? selectedKey : "Upcoming"}</h3>
           {(selectedKey ? selectedEvents : upcoming).length === 0 ? (
             <p className="text-sm text-muted-foreground">Nothing here.</p>

@@ -24,13 +24,13 @@ export const Route = createFileRoute("/api/public/contact")({
         }
         const { name, email, company, message } = parsed.data;
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { error } = await supabaseAdmin.from("leads").insert({
+        const { error } = await supabaseAdmin.from("clients").insert({
           name,
           email,
           company: company ?? null,
           notes: message ?? null,
           source: "WEBSITE",
-          status: "NEW",
+          status: "LEAD",
         });
         if (error) {
           console.error("[contact] insert failed", error.message);
