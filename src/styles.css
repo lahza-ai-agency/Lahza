@@ -45,7 +45,7 @@
   --font-display: "Bricolage Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --shadow-glow: 0 0 80px -16px rgb(139 92 246 / 0.45);
+  --shadow-glow: 0 0 80px -16px rgb(199 240 45 / 0.4);
   --shadow-glass: 0 8px 32px -8px rgb(5 5 15 / 0.6), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -58,56 +58,58 @@
   --color-aurora-cyan: var(--aurora-cyan);
 }
 
-/* Dark Luxury theme — Lahza brand (violet / blue / cyan aurora) */
+/* Dark Luxury theme — Lahza brand (lime green, matching the logo) */
 :root {
   --radius: 1rem;
 
-  --background: oklch(0.09 0.018 290);     /* #060611 near-black violet */
-  --foreground: oklch(0.97 0.005 290);
+  --background: oklch(0.1 0.012 122);      /* near-black, faint lime whisper */
+  --foreground: oklch(0.97 0.005 122);
 
-  --card: oklch(0.15 0.025 290);
-  --card-foreground: oklch(0.97 0.005 290);
-  --popover: oklch(0.14 0.025 290);
-  --popover-foreground: oklch(0.97 0.005 290);
+  --card: oklch(0.16 0.018 122);
+  --card-foreground: oklch(0.97 0.005 122);
+  --popover: oklch(0.15 0.018 122);
+  --popover-foreground: oklch(0.97 0.005 122);
 
-  --primary: oklch(0.64 0.23 296);         /* violet #8B5CF6 */
-  --primary-foreground: oklch(0.98 0.005 290);
+  --primary: oklch(0.9 0.21 122);          /* logo lime — #C7F02D */
+  --primary-foreground: oklch(0.15 0.03 122);
 
-  --secondary: oklch(0.2 0.025 290);
-  --secondary-foreground: oklch(0.97 0.005 290);
+  --secondary: oklch(0.21 0.018 122);
+  --secondary-foreground: oklch(0.97 0.005 122);
 
-  --muted: oklch(0.19 0.022 290);
-  --muted-foreground: oklch(0.65 0.025 290);
+  --muted: oklch(0.2 0.016 122);
+  --muted-foreground: oklch(0.65 0.02 122);
 
-  --accent: oklch(0.68 0.15 220);          /* cyan-blue #38BDF8 */
-  --accent-foreground: oklch(0.1 0.02 290);
+  --accent: oklch(0.75 0.18 122);          /* softer lime, for secondary accents */
+  --accent-foreground: oklch(0.12 0.02 122);
 
   --destructive: oklch(0.62 0.23 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.27 0.03 290 / 0.6);
-  --input: oklch(0.27 0.03 290 / 0.6);
-  --ring: oklch(0.64 0.23 296);
+  --border: oklch(0.28 0.02 122 / 0.5);
+  --input: oklch(0.28 0.02 122 / 0.5);
+  --ring: oklch(0.9 0.21 122);
 
-  --chart-1: oklch(0.64 0.23 296);
-  --chart-2: oklch(0.6 0.19 258);
-  --chart-3: oklch(0.78 0.13 200);
-  --chart-4: oklch(0.65 0.2 320);
-  --chart-5: oklch(0.75 0.18 60);
+  --chart-1: oklch(0.9 0.21 122);
+  --chart-2: oklch(0.75 0.18 122);
+  --chart-3: oklch(0.6 0.15 122);
+  --chart-4: oklch(0.85 0.19 100);
+  --chart-5: oklch(0.7 0.16 145);
 
-  --sidebar: oklch(0.1 0.02 290);
-  --sidebar-foreground: oklch(0.92 0.005 290);
-  --sidebar-primary: oklch(0.64 0.23 296);
-  --sidebar-primary-foreground: oklch(0.98 0.005 290);
-  --sidebar-accent: oklch(0.2 0.025 290);
-  --sidebar-accent-foreground: oklch(0.97 0.005 290);
-  --sidebar-border: oklch(0.22 0.025 290);
-  --sidebar-ring: oklch(0.64 0.23 296);
+  --sidebar: oklch(0.1 0.014 122);
+  --sidebar-foreground: oklch(0.92 0.005 122);
+  --sidebar-primary: oklch(0.9 0.21 122);
+  --sidebar-primary-foreground: oklch(0.15 0.03 122);
+  --sidebar-accent: oklch(0.21 0.018 122);
+  --sidebar-accent-foreground: oklch(0.97 0.005 122);
+  --sidebar-border: oklch(0.23 0.018 122);
+  --sidebar-ring: oklch(0.9 0.21 122);
 
-  /* Aurora gradient stops, exposed for utilities below */
-  --aurora-violet: oklch(0.64 0.23 296);
-  --aurora-blue: oklch(0.6 0.19 258);
-  --aurora-cyan: oklch(0.78 0.13 200);
+  /* Gradient stops — one hue family (lime) at different lightness, so
+     gradients read as depth/glow rather than a rainbow. Variable names kept
+     as "aurora-*" so every glass/gradient utility below repaints for free. */
+  --aurora-violet: oklch(0.55 0.14 122);
+  --aurora-blue: oklch(0.75 0.19 122);
+  --aurora-cyan: oklch(0.9 0.21 122);
 }
 
 @layer base {
@@ -149,13 +151,13 @@
 
 @utility bg-aurora-mesh {
   background-image:
-    radial-gradient(at 15% 0%, oklch(0.64 0.23 296 / 0.35) 0, transparent 55%),
-    radial-gradient(at 85% 10%, oklch(0.6 0.19 258 / 0.3) 0, transparent 55%),
-    radial-gradient(at 50% 100%, oklch(0.78 0.13 200 / 0.25) 0, transparent 55%);
+    radial-gradient(at 15% 0%, oklch(0.55 0.14 122 / 0.3) 0, transparent 55%),
+    radial-gradient(at 85% 10%, oklch(0.75 0.19 122 / 0.25) 0, transparent 55%),
+    radial-gradient(at 50% 100%, oklch(0.9 0.21 122 / 0.2) 0, transparent 55%);
 }
 
 @utility glass-panel {
-  background-color: oklch(0.18 0.03 290 / 0.45);
+  background-color: oklch(0.19 0.02 122 / 0.45);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid oklch(1 0 0 / 0.08);
@@ -163,7 +165,7 @@
 }
 
 @utility glass-panel-strong {
-  background-color: oklch(0.16 0.03 290 / 0.75);
+  background-color: oklch(0.17 0.02 122 / 0.75);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid oklch(1 0 0 / 0.1);
@@ -174,7 +176,7 @@
   position: relative;
   border: 1px solid transparent;
   background:
-    linear-gradient(oklch(0.16 0.03 290 / 0.6), oklch(0.16 0.03 290 / 0.6)) padding-box,
+    linear-gradient(oklch(0.17 0.02 122 / 0.6), oklch(0.17 0.02 122 / 0.6)) padding-box,
     linear-gradient(120deg, var(--aurora-violet), var(--aurora-blue), var(--aurora-cyan)) border-box;
 }
 
@@ -209,9 +211,9 @@
   background: transparent;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: oklch(0.27 0.02 280);
+  background: oklch(0.28 0.02 122);
   border-radius: 9999px;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.35 0.02 280);
+  background: oklch(0.36 0.02 122);
 }

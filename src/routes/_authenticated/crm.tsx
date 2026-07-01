@@ -390,6 +390,22 @@ function ClientsTab() {
     onError: () => toast.error("Could not add client"),
   });
 
+  const deleteClientMut = useMutation({
+    mutationFn: deleteContact,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["clients-directory"] });
+      qc.invalidateQueries({ queryKey: ["client-options"] });
+      toast.success("Client deleted");
+    },
+    onError: () => toast.error("Could not delete client"),
+  });
+
+  function handleDeleteClient(e: React.MouseEvent, id: string, name: string) {
+    e.stopPropagation();
+    if (!window.confirm(`Delete "${name}"? This can't be undone.`)) return;
+    deleteClientMut.mutate(id);
+  }
+
   function handleAddClient(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -474,26 +490,39 @@ function ClientsTab() {
         ) : (
           <div className="divide-y divide-border">
             {filtered.map((c) => (
-              <button
+              <div
                 key={c.id}
-                onClick={() => setActiveClientId(c.id)}
-                className="flex w-full items-center gap-3 px-5 py-3 text-start transition-colors hover:bg-accent/30"
+                className="group flex w-full items-center gap-3 px-5 py-3 transition-colors hover:bg-accent/30"
               >
-                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                  {(c.name ?? c.company ?? "?").slice(0, 2).toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {c.name ?? c.company ?? "Unnamed client"}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {c.company ?? c.email ?? "—"}
-                  </p>
-                </div>
+                <button
+                  onClick={() => setActiveClientId(c.id)}
+                  className="flex min-w-0 flex-1 items-center gap-3 text-start"
+                >
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                    {(c.name ?? c.company ?? "?").slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">
+                      {c.name ?? c.company ?? "Unnamed client"}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {c.company ?? c.email ?? "—"}
+                    </p>
+                  </div>
+                </button>
                 <Badge variant="secondary" className="shrink-0">
                   {c.project_count} {c.project_count === 1 ? "project" : "projects"}
                 </Badge>
-              </button>
+                <button
+                  onClick={(e) =>
+                    handleDeleteClient(e, c.id, c.name ?? c.company ?? "this client")
+                  }
+                  className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                  title="Delete client"
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                </button>
+              </div>
             ))}
           </div>
         )}

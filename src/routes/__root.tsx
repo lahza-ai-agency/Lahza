@@ -10,7 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import logoUrl from "@/assets/lahza-logo.svg";
+import logoUrl from "@/assets/Logo.png";
 import { reportAppError } from "../lib/error-reporting";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
@@ -98,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: logoUrl },
     ],
     links: [
-      { rel: "icon", type: "image/svg+xml", href: logoUrl },
+      { rel: "icon", type: "image/png", href: logoUrl },
       { rel: "apple-touch-icon", href: logoUrl },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
