@@ -169,6 +169,62 @@ export async function createClient(input: ClientInput) {
   return data.id as string;
 }
 
+/** user_ids that already have a fleshed-out client record (a company name
+ * set) — used to filter the "pick an existing account" list down to
+ * accounts that don't already show up as a real client. */
+export async function fetchLinkedAccountIds(): Promise<Set<string>> {
+  const { data, error } = await supabase
+    .from("clients")
+    .select("user_id, company")
+    .not("user_id", "is", null)
+    .not("company", "is", null);
+  if (error) throw error;
+  return new Set((data ?? []).map((c) => c.user_id).filter(Boolean) as string[]);
+}
+
+/** Staff: turn an already-registered account into a real client. Signing up
+ * with the CLIENT role auto-creates a blank clients row for that user — this
+ * fills it in rather than creating a second, duplicate record. If no row
+ * exists yet for some reason, it creates one linked to that account. */
+export async function linkAccountAsClient(userId: string, input: ClientInput) {
+  const { data: existing, error: fetchError } = await supabase
+    .from("clients")
+    .select("id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+
+  if (existing) {
+    const { error } = await supabase
+      .from("clients")
+      .update({
+        company: input.company || null,
+        phone: input.phone || null,
+        website: input.website || null,
+        notes: input.notes || null,
+        status: "ACTIVE_CLIENT",
+      })
+      .eq("id", existing.id);
+    if (error) throw error;
+    return existing.id as string;
+  }
+
+  const { data, error } = await supabase
+    .from("clients")
+    .insert({
+      user_id: userId,
+      company: input.company || null,
+      phone: input.phone || null,
+      website: input.website || null,
+      notes: input.notes || null,
+      status: "ACTIVE_CLIENT",
+    })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return data.id as string;
+}
+
 export async function updateClient(clientId: string, input: ClientInput) {
   const { error } = await supabase
     .from("clients")

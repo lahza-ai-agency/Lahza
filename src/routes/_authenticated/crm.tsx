@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { listUsers } from "@/lib/admin-users.functions";
 import {
   fetchContacts,
   createContact,
@@ -16,6 +18,8 @@ import {
   fetchClientsDirectory,
   fetchClientDetail,
   createClient,
+  linkAccountAsClient,
+  fetchLinkedAccountIds,
   updateClientSubscription,
   type ClientDirectoryEntry,
   type ClientDetail,
@@ -367,6 +371,7 @@ function ClientsTab() {
   const [search, setSearch] = useState("");
   const [activeClientId, setActiveClientId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ["clients-directory"],
@@ -379,6 +384,24 @@ function ClientsTab() {
     enabled: !!activeClientId,
   });
 
+  const listAccounts = useServerFn(listUsers);
+  const { data: allAccounts = [] } = useQuery({
+    queryKey: ["all-accounts"],
+    queryFn: () => listAccounts(),
+    enabled: addOpen,
+  });
+  const { data: linkedAccountIds } = useQuery({
+    queryKey: ["linked-account-ids"],
+    queryFn: fetchLinkedAccountIds,
+    enabled: addOpen,
+  });
+  // Only show accounts with the CLIENT role that don't already have a
+  // fleshed-out client record — picking one fills in *that* account's row
+  // instead of creating a duplicate.
+  const linkableAccounts = allAccounts.filter(
+    (a) => a.role === "CLIENT" && !linkedAccountIds?.has(a.id),
+  );
+
   const createClientMut = useMutation({
     mutationFn: createClient,
     onSuccess: () => {
@@ -386,8 +409,23 @@ function ClientsTab() {
       qc.invalidateQueries({ queryKey: ["client-options"] });
       toast.success("Client added");
       setAddOpen(false);
+      setSelectedAccountId("");
     },
     onError: () => toast.error("Could not add client"),
+  });
+
+  const linkAccountMut = useMutation({
+    mutationFn: (v: { userId: string; input: Parameters<typeof linkAccountAsClient>[1] }) =>
+      linkAccountAsClient(v.userId, v.input),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["clients-directory"] });
+      qc.invalidateQueries({ queryKey: ["client-options"] });
+      qc.invalidateQueries({ queryKey: ["linked-account-ids"] });
+      toast.success("Account linked as client");
+      setAddOpen(false);
+      setSelectedAccountId("");
+    },
+    onError: () => toast.error("Could not link this account"),
   });
 
   const deleteClientMut = useMutation({
@@ -409,13 +447,17 @@ function ClientsTab() {
   function handleAddClient(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    createClientMut.mutate({
+    const input = {
       company: String(fd.get("company") || ""),
       phone: String(fd.get("phone") || ""),
       website: String(fd.get("website") || ""),
       notes: String(fd.get("notes") || ""),
-    });
-    e.currentTarget.reset();
+    };
+    if (selectedAccountId) {
+      linkAccountMut.mutate({ userId: selectedAccountId, input });
+    } else {
+      createClientMut.mutate(input);
+    }
   }
 
   const filtered = clients.filter((c) => {
@@ -440,7 +482,13 @@ function ClientsTab() {
             className="w-64 ps-8"
           />
         </div>
-        <Dialog open={addOpen} onOpenChange={setAddOpen}>
+        <Dialog
+          open={addOpen}
+          onOpenChange={(o) => {
+            setAddOpen(o);
+            if (!o) setSelectedAccountId("");
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="gap-1.5">
               <Plus className="h-4 w-4" /> Client
@@ -451,6 +499,31 @@ function ClientsTab() {
               <DialogTitle>Add Client</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleAddClient} className="space-y-3">
+              <div className="space-y-1.5">
+                <Label>Link to an existing account (optional)</Label>
+                <Select
+                  value={selectedAccountId || "none"}
+                  onValueChange={(v) => setSelectedAccountId(v === "none" ? "" : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Walk-in client, no account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Walk-in client, no account</SelectItem>
+                    {linkableAccounts.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.name ?? a.email ?? "Unnamed account"}
+                        {a.email && a.name ? ` — ${a.email}` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {linkableAccounts.length === 0
+                    ? "No signed-up accounts waiting to be linked right now."
+                    : "Picking an account fills in that person's client record instead of creating a new one."}
+                </p>
+              </div>
               <div className="space-y-1.5">
                 <Label>Company name</Label>
                 <Input name="company" required />
@@ -470,8 +543,11 @@ function ClientsTab() {
                 <Textarea name="notes" rows={2} />
               </div>
               <DialogFooter>
-                <Button type="submit" disabled={createClientMut.isPending}>
-                  Add client
+                <Button
+                  type="submit"
+                  disabled={createClientMut.isPending || linkAccountMut.isPending}
+                >
+                  {selectedAccountId ? "Link account as client" : "Add client"}
                 </Button>
               </DialogFooter>
             </form>

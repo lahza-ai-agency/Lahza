@@ -45,7 +45,7 @@
   --font-display: "Bricolage Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --shadow-glow: 0 0 80px -16px rgb(199 240 45 / 0.4);
+  --shadow-glow: 0 0 70px -18px rgb(180 220 60 / 0.3);
   --shadow-glass: 0 8px 32px -8px rgb(5 5 15 / 0.6), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -58,58 +58,58 @@
   --color-aurora-cyan: var(--aurora-cyan);
 }
 
-/* Dark Luxury theme — Lahza brand (lime green, matching the logo) */
+/* Dark theme — Lahza brand: pure black + one lime green, nothing else */
 :root {
   --radius: 1rem;
 
-  --background: oklch(0.1 0.012 122);      /* near-black, faint lime whisper */
-  --foreground: oklch(0.97 0.005 122);
+  --background: oklch(0.08 0 0);           /* true near-black, no hue tint */
+  --foreground: oklch(0.96 0 0);
 
-  --card: oklch(0.16 0.018 122);
-  --card-foreground: oklch(0.97 0.005 122);
-  --popover: oklch(0.15 0.018 122);
-  --popover-foreground: oklch(0.97 0.005 122);
+  --card: oklch(0.13 0 0);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.12 0 0);
+  --popover-foreground: oklch(0.96 0 0);
 
-  --primary: oklch(0.9 0.21 122);          /* logo lime — #C7F02D */
-  --primary-foreground: oklch(0.15 0.03 122);
+  --primary: oklch(0.85 0.19 122);         /* logo lime, softened for eye comfort */
+  --primary-foreground: oklch(0.13 0.02 122);
 
-  --secondary: oklch(0.21 0.018 122);
-  --secondary-foreground: oklch(0.97 0.005 122);
+  --secondary: oklch(0.18 0 0);
+  --secondary-foreground: oklch(0.96 0 0);
 
-  --muted: oklch(0.2 0.016 122);
-  --muted-foreground: oklch(0.65 0.02 122);
+  --muted: oklch(0.16 0 0);
+  --muted-foreground: oklch(0.63 0 0);
 
-  --accent: oklch(0.75 0.18 122);          /* softer lime, for secondary accents */
-  --accent-foreground: oklch(0.12 0.02 122);
+  --accent: oklch(0.5 0.12 122);           /* dim/quiet green for lower-emphasis accents */
+  --accent-foreground: oklch(0.96 0 0);
 
   --destructive: oklch(0.62 0.23 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.28 0.02 122 / 0.5);
-  --input: oklch(0.28 0.02 122 / 0.5);
-  --ring: oklch(0.9 0.21 122);
+  --border: oklch(0.26 0 0 / 0.6);
+  --input: oklch(0.26 0 0 / 0.6);
+  --ring: oklch(0.85 0.19 122);
 
-  --chart-1: oklch(0.9 0.21 122);
-  --chart-2: oklch(0.75 0.18 122);
-  --chart-3: oklch(0.6 0.15 122);
-  --chart-4: oklch(0.85 0.19 100);
-  --chart-5: oklch(0.7 0.16 145);
+  --chart-1: oklch(0.85 0.19 122);
+  --chart-2: oklch(0.65 0.14 122);
+  --chart-3: oklch(0.48 0.1 122);
+  --chart-4: oklch(0.75 0 0);
+  --chart-5: oklch(0.5 0 0);
 
-  --sidebar: oklch(0.1 0.014 122);
-  --sidebar-foreground: oklch(0.92 0.005 122);
-  --sidebar-primary: oklch(0.9 0.21 122);
-  --sidebar-primary-foreground: oklch(0.15 0.03 122);
-  --sidebar-accent: oklch(0.21 0.018 122);
-  --sidebar-accent-foreground: oklch(0.97 0.005 122);
-  --sidebar-border: oklch(0.23 0.018 122);
-  --sidebar-ring: oklch(0.9 0.21 122);
+  --sidebar: oklch(0.07 0 0);
+  --sidebar-foreground: oklch(0.9 0 0);
+  --sidebar-primary: oklch(0.85 0.19 122);
+  --sidebar-primary-foreground: oklch(0.13 0.02 122);
+  --sidebar-accent: oklch(0.17 0 0);
+  --sidebar-accent-foreground: oklch(0.96 0 0);
+  --sidebar-border: oklch(0.2 0 0);
+  --sidebar-ring: oklch(0.85 0.19 122);
 
-  /* Gradient stops — one hue family (lime) at different lightness, so
-     gradients read as depth/glow rather than a rainbow. Variable names kept
-     as "aurora-*" so every glass/gradient utility below repaints for free. */
-  --aurora-violet: oklch(0.55 0.14 122);
-  --aurora-blue: oklch(0.75 0.19 122);
-  --aurora-cyan: oklch(0.9 0.21 122);
+  /* Gradient stops — all one lime hue at different lightness, softened for
+     comfort (lower chroma / opacity than a neon accent color). Variable
+     names kept as "aurora-*" so every glass/gradient utility repaints. */
+  --aurora-violet: oklch(0.4 0.09 122);
+  --aurora-blue: oklch(0.6 0.13 122);
+  --aurora-cyan: oklch(0.85 0.19 122);
 }
 
 @layer base {
@@ -151,24 +151,24 @@
 
 @utility bg-aurora-mesh {
   background-image:
-    radial-gradient(at 15% 0%, oklch(0.55 0.14 122 / 0.3) 0, transparent 55%),
-    radial-gradient(at 85% 10%, oklch(0.75 0.19 122 / 0.25) 0, transparent 55%),
-    radial-gradient(at 50% 100%, oklch(0.9 0.21 122 / 0.2) 0, transparent 55%);
+    radial-gradient(at 15% 0%, oklch(0.4 0.09 122 / 0.18) 0, transparent 55%),
+    radial-gradient(at 85% 10%, oklch(0.6 0.13 122 / 0.14) 0, transparent 55%),
+    radial-gradient(at 50% 100%, oklch(0.85 0.19 122 / 0.12) 0, transparent 55%);
 }
 
 @utility glass-panel {
-  background-color: oklch(0.19 0.02 122 / 0.45);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid oklch(1 0 0 / 0.08);
+  background-color: oklch(0.15 0 0 / 0.5);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid oklch(1 0 0 / 0.07);
   box-shadow: var(--shadow-glass);
 }
 
 @utility glass-panel-strong {
-  background-color: oklch(0.17 0.02 122 / 0.75);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid oklch(1 0 0 / 0.1);
+  background-color: oklch(0.13 0 0 / 0.8);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid oklch(1 0 0 / 0.09);
   box-shadow: var(--shadow-glass);
 }
 
@@ -176,7 +176,7 @@
   position: relative;
   border: 1px solid transparent;
   background:
-    linear-gradient(oklch(0.17 0.02 122 / 0.6), oklch(0.17 0.02 122 / 0.6)) padding-box,
+    linear-gradient(oklch(0.14 0 0 / 0.7), oklch(0.14 0 0 / 0.7)) padding-box,
     linear-gradient(120deg, var(--aurora-violet), var(--aurora-blue), var(--aurora-cyan)) border-box;
 }
 
@@ -211,9 +211,9 @@
   background: transparent;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: oklch(0.28 0.02 122);
+  background: oklch(0.26 0 0);
   border-radius: 9999px;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.36 0.02 122);
+  background: oklch(0.34 0 0);
 }
