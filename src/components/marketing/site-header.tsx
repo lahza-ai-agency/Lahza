@@ -9,7 +9,7 @@ import { Menu, X } from "lucide-react";
 const navItems = [
   { to: "/services", label: "Services" },
   { to: "/about", label: "About" },
-  { to: "/case-studies", label: "Case Studies" },
+  //{ to: "/case-studies", label: "Case Studies" },
   { to: "/pricing", label: "Pricing" },
   { to: "/contact", label: "Contact" },
 ];
