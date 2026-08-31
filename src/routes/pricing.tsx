@@ -25,7 +25,7 @@ export const Route = createFileRoute("/pricing")({
 const tiers = [
   {
     name: "Starter",
-    price: "5,900",
+    price: "9,900",
     desc: "Perfect for small companies getting started with AI.",
     features: [
       "AI Sales Agent",
@@ -41,7 +41,7 @@ const tiers = [
   },
   {
     name: "Growth",
-    price: "9,900",
+    price: "14,900",
     desc: "For growing companies automating sales, marketing & operations.",
     features: [
       "Everything in Starter",
@@ -57,7 +57,7 @@ const tiers = [
   },
   {
     name: "Pro",
-    price: "14,900",
+    price: "21,900",
     desc: "A complete AI-powered automation system for scaling businesses.",
     features: [
       "Everything in Growth",
